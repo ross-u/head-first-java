@@ -1,48 +1,16 @@
 import java.util.*;
 
-/*
-              *
-      0 1 2 3 4 5 6
-  A [ 0 0 0 0 0 0 0 ]
-  B [ 0 0 0 0 0 0 0 ]
-  C [ 0 X 0 0 0 0 0 ]
-  D [ 0 0 0 0 0 0 0 ]
-* E [ 0 0 0 0 * 0 0 ]
-  F [ 0 0 0 0 0 0 0 ]
-  G [ 0 0 0 0 0 0 0 ]
-
-*___________________________
-*
-*
-    A: 0 , B: 1, C: 2, D: 3, E: 4, F: 5, G: 6,
-
-      0 1 2 3 4 5 6   7 8 9 0 1 2 13 14 5 6 7 8 9 20 21 2 3 4 5 6 7
-  A [ 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 ]
-
-  Max horizontal: 4
-  Max  vertical : E(4)
-
-  H C1 - 2 1  -> 16
-  H D2 - 3 2  -> 16
-  V E4 - 4 4
-
-* */
-
 public class Grid {
-    Random rand = new Random();
-    int DEFAULT_SIZE = 7;
-    private int gridSize;
-    private boolean[] linearGrid;
+    private static final String ALPHABET_LABELS = "ABCDEFG";
+    private static final int GRID_SIZE = 49;
+    private static final int ROW_LENGTH = 7;
+    private static final int HORIZONTAL_INCREMENT = 1;
+    private static final int VERTICAL_INCREMENT = ROW_LENGTH;
 
-    public Grid() {
-        gridSize = DEFAULT_SIZE;
-        linearGrid = new boolean[DEFAULT_SIZE * DEFAULT_SIZE];
-    }
+    private final boolean[] linearGrid = new boolean[GRID_SIZE];
+    private final Random rand = new Random();
 
-    public Grid(int size) {
-        gridSize = size;
-        linearGrid = new boolean[size * size];
-    }
+
 
     public ArrayList<String> generateStartupLocation() {
         int[] indexes = null;
@@ -50,16 +18,15 @@ public class Grid {
         boolean gridSlotsAvailable = false;
 
         while(!gridSlotsAvailable) {
-            int upperbound = gridSize - 3;
-            int randomPositionX = (rand.nextInt(0, upperbound + 1));
-            int randomPositionY = (rand.nextInt(0, upperbound + 1));
-            int randomStartPosition = (randomPositionX * gridSize) + randomPositionY;
+            int upperbound = ROW_LENGTH - 3;
+            int randomPositionX = rand.nextInt(0, upperbound + 1);
+            int randomPositionY = rand.nextInt(0, upperbound + 1);
+            int randomStartPosition = (randomPositionX * ROW_LENGTH) + randomPositionY;
 
             int randomNumber = (int) (Math.random() * 1);
             String direction = randomNumber == 0 ? "horizontal" : "vertical";
 
             indexes = getPositionIndexes(randomStartPosition, direction);
-
             gridSlotsAvailable = areIndexesAvailable(indexes);
         }
 
@@ -76,10 +43,10 @@ public class Grid {
     }
 
     private static int[] getPositionIndexes(int startIndex, String direction) {
-        int step = direction == "vertical" ? 7 : 1;
+        int increment = direction == "vertical" ? VERTICAL_INCREMENT : HORIZONTAL_INCREMENT;
         int slot1 = startIndex;
-        int slot2 = startIndex + (step * 1);
-        int slot3 = startIndex + (step * 2);
+        int slot2 = startIndex + (increment * 1);
+        int slot3 = startIndex + (increment * 2);
         int[] indexes = { slot1 , slot2, slot3 };
         return indexes;
     }
@@ -116,20 +83,19 @@ public class Grid {
         ArrayList<String> locations = new ArrayList<>();
 
         for(int index: indexes) {
-            String location = convertIndexToLocation(index);
+            String location = convertIndexToAlphaNumericLocation(index);
             locations.add(location);
         }
 
         return locations;
     }
 
-    private String convertIndexToLocation(int index) {
-        String[] HORIZONTAL_LABELS = { "A", "B", "C", "D", "E", "F", "G" };
-        int positionX = index / gridSize;
-        int positionY = index % gridSize;
+    private String convertIndexToAlphaNumericLocation(int index) {
+        int positionY = index / ROW_LENGTH;
+        int positionX = index % ROW_LENGTH;
 
-        String loc = HORIZONTAL_LABELS[positionX] + positionY;
-        return loc;
+        String positionYLetter = ALPHABET_LABELS.substring(positionY, positionY + 1);
+        return positionYLetter + positionX;
     }
 
     private void setSlotsOccupied(int[] indexes) {
@@ -148,7 +114,7 @@ public class Grid {
         for (int i = 0; i < linearGrid.length; i++) {
             boolean slotIsOccupied = linearGrid[i] == true;
             if (slotIsOccupied) {
-                String slotLocation = convertIndexToLocation(i);
+                String slotLocation = convertIndexToAlphaNumericLocation(i);
                 occupiedSlots.add(slotLocation);
             }
         }

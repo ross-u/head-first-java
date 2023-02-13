@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 public class Startup {
@@ -21,9 +22,6 @@ public class Startup {
         return result;
     }
 
-    public void setLocationCells(ArrayList<String> cells) {
-        locationCells = cells;
-    }
 
     public String getName() {
         return name;
@@ -31,5 +29,13 @@ public class Startup {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setLocationCells(ArrayList<String> cells) {
+        locationCells = cells;
+    }
+
+    public ArrayList<String> getLocationCells() {
+        return locationCells;
     }
 }

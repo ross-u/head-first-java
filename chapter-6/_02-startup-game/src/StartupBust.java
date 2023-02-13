@@ -1,10 +1,10 @@
 import java.util.*;
 
 public class StartupBust {
+    private final String[] STARTUP_NAMES = {"absolutepretzel", "kittycats", "bestbear "};
     private Grid grid = new Grid();
     private Console console = new Console();
     private ArrayList<Startup> startups = new ArrayList<Startup>();
-    String[] startupData = {"absolutepretzel", "kittycats", "bestbear "};
     private boolean gameInProgress;
     private int numberOfGuesses;
 
@@ -12,7 +12,7 @@ public class StartupBust {
     public void startGame() {
         setUpGame();
 
-        while(gameInProgress) {
+        while(!startups.isEmpty()) {
             String userGuess = console.getUserInput("enter a guess");
             numberOfGuesses++;
             checkUserGuess(userGuess);
@@ -23,33 +23,39 @@ public class StartupBust {
 
     private void checkUserGuess(String userGuess) {
         String result = "";
+        String message = "Miss";
 
         for(Startup startup: startups) {
             result = startup.checkYourself(userGuess);
+
             if (result == "Kill") {
-                System.out.println("Ouch! You sunk " + startup.getName() + "    :(");
+                message = "Ouch! You sunk " + startup.getName() + "    :(";
                 startups.remove(startup);
                 break;
             }
-            else if (result == "Hit") {
-                System.out.println("Hit");
+            if (result == "Hit") {
+                message = "Hit";
                 break;
             }
-            else {
-                System.out.println("Miss");
-            }
         }
+
+        System.out.println(message);
 
     }
 
     private void setUpGame() {
         gameInProgress = true;
 
-        for(String name: startupData) {
+        for(String name: STARTUP_NAMES) {
             Startup startup = new Startup();
             startup.setName(name);
             ArrayList<String> newLocation = grid.generateStartupLocation();
-            
+
+//            System.out.print("newLocation: ");
+//            for(String l: newLocation) System.out.print(l + " ");
+//            System.out.println("");
+//            System.out.println("------------");
+
             startup.setLocationCells(newLocation);
             startups.add(startup);
         }
